@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import typing
+
+import cv2 as cv
 import matplotlib.pyplot as plt
 import seaborn as sns
 
