@@ -6,11 +6,14 @@ from typing import List
 import cv2 as cv
 import IPython.display as display
 import ipywidgets as widgets
+import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import seaborn as sns
 
 def countplot(dataframe, y, hue=None, **kwargs):
     """
+    Wrapper function to seaborn countplot that includes formatting and file write.
     """
 
     dataframe = dataframe.toPandas()
@@ -27,17 +30,22 @@ def countplot(dataframe, y, hue=None, **kwargs):
                     bbox_inches="tight")
     plt.close()
 
-def distribution(dataframe, x):
+def distribution(dataframe, x, hue=None, **kwargs):
     """
+    Wrapper function to seaborn histplot that includes formatting and file write.
     """
     
     dataframe = dataframe.toPandas()
-    sns.histplot(data=dataframe, x=x, kde=True)
+    sns.histplot(data=dataframe, x=x, hue=hue, **kwargs)
     plt.xlabel(x)
     plt.ylabel("Frequency")
-    #plt.xscale("symlog", linthresh=100)
-    plt.title(f"{x}")
-    plt.savefig(f"figures/{x}_distribution.png",
+    if hue is not None:
+        plt.title(f"{x} by {hue}")
+        plt.savefig(f"figures/{x}_distribution_by_{hue}.png",
+                    bbox_inches="tight")
+    else:
+        plt.title(f"{x}")
+        plt.savefig(f"figures/{x}_distribution.png",
                     bbox_inches="tight")
     plt.close()
 
@@ -58,7 +66,7 @@ def catplot(dataframe, x, y, hue=None, kind=None, **kwargs):
                     bbox_inches="tight")
     plt.close()
 
-def display_images(imgfiles: List[str], width=300, height=300):
+def display_images(imgfiles: List[str], width=300, height=300, ncols=4):
     """
     Display images in-line in ipython environment.
 
@@ -66,11 +74,29 @@ def display_images(imgfiles: List[str], width=300, height=300):
         imgfiles (List): list of image file names to display.
     """
 
+    if len(imgfiles) <= ncols:
+        ncols = len(imgfiles)
+        plt.figure(figsize=(width*ncols, height*nrows))
+        plt.axis("off")
+        fig, ax = plt.subplots(ncols)
+        for i, imgfile in enumerate(imgfiles):
+            ax[i].imshow(impimg.imread(imgfile))
+    else:
+        nrows = round(np.ceil(len(imgfiles) / ncols))
+        plt.figure(figsize=(width*ncols, height*nrows))
+        plt.axis("off")
+        fig, ax = plt.subplots(ncols, nrows)
+        for i, imgfile in enumerate(imgfiles):
+            row = i % ncols
+            col = i // ncols
+            ax[row, col].imshow(impimg.imread(imgfile))
+    """
     images = []
     for imgfile in imgfiles:
         image = open(Path("figures") / imgfile, "rb").read()
         images.append(widgets.Image(value=image, format="png", width=width, height=height))
     widgetbox=widgets.HBox(images)
     display.display(widgetbox)
+    """
 
 # EOF
