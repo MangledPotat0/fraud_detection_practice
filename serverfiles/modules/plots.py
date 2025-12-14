@@ -74,22 +74,23 @@ def display_images(imgfiles: List[str], width=300, height=300, ncols=4):
         imgfiles (List): list of image file names to display.
     """
 
+    plt.close()
     if len(imgfiles) <= ncols:
         ncols = len(imgfiles)
-        plt.figure(figsize=(width*ncols, height*nrows))
-        plt.axis("off")
-        fig, ax = plt.subplots(ncols)
+        plt.figure(figsize=(width*ncols, height))
+        fig, ax = plt.subplots(1,ncols)
         for i, imgfile in enumerate(imgfiles):
-            ax[i].imshow(impimg.imread(imgfile))
+            ax[i].axis("off")
+            ax[i].imshow(mpimg.imread(Path("figures") / imgfile))
     else:
         nrows = round(np.ceil(len(imgfiles) / ncols))
         plt.figure(figsize=(width*ncols, height*nrows))
-        plt.axis("off")
         fig, ax = plt.subplots(ncols, nrows)
         for i, imgfile in enumerate(imgfiles):
             row = i % ncols
             col = i // ncols
-            ax[row, col].imshow(impimg.imread(imgfile))
+            ax[row, col].axis("off")
+            ax[row, col].imshow(impimg.imread(Path("figures") / imgfile))
     """
     images = []
     for imgfile in imgfiles:
